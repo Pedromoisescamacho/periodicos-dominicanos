@@ -28,7 +28,7 @@ contenido <- function(url){
                 noticia <- read_html(url)
                 contenido <- noticia %>% html_nodes("#layout-column_column-4 p") %>% html_text %>% 
                         as.list() %>% do.call(what = paste)
-                contenido <- ifelse(identical(contenido, character(0)), "NULL", contenido)
+                #contenido <- ifelse(identical(contenido, character(0)), "NULL", contenido)
                 contenido
         }
         return(tryCatch(content(url), error = function(e) "NULL"))
@@ -49,10 +49,11 @@ fecha <- function(url){
         title <- function(url){
                 noticia <- read_html(url)
                 pattern <- "[0-9].*M"
-                fecha_cruda <- noticia %>% html_nodes(".art-date") %>% html_text
-                fecha <- regmatches(fecha_cruda, regexpr(pattern, fecha_cruda)) #%>%  as.POSIXct(format = "%d %b %Y, %H:%M %p")
-                fecha <- ifelse(identical(fecha, character(0)), "NULL", fecha)
-                fecha
+                fecha_cruda <- noticia %>% html_nodes(".art-date") %>% html_text %>% gsub(pattern = ".*([0-9].{15,}M).*$","\\1", replacement = "\\1")
+                #fecha <-  as.POSIXct(format = "%d %b %Y, %H:%M %p")
+                #fecha <- ifelse(identical(fecha, character(0)), "NULL", fecha)
+                #fecha
+                fecha_cruda
         }
         return(tryCatch(title(url), error = function(e) "NULL"))
 }
@@ -87,3 +88,6 @@ titulos[sapply(titulos, is.null)]
 noticias <- data.frame(contenidos2, fechas, titulo, stringsAsFactors = F)
 
 write.csv(noticias, "./noticias csv/diario_libre_noticias.csv")
+
+
+
